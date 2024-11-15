@@ -18,7 +18,7 @@ def parse_repositories(html):
     from the GitHub user profile page.
     """
     soup = BeautifulSoup(html, 'html.parser')
-    repos = soup.find_all('li', class_='pinned-item-list-item')  # Find all pinned repo blocks
+    repos = soup.find_all('li', class_='mb-3')  # Find all pinned repo blocks
 
     repo_data = []
     
