@@ -1,7 +1,7 @@
-Repository Name,Visibility,Description,Programming Language
-TB-project,Public,first github repository,Not specified
-JavaSpringFirstProject,Public,,Java
-Lahoussine-Bouhmou,Public,,Not specified
-lahoussine-bouhmou.github.io,Public,,HTML
-Github-Scraper,Public,,Not specified
-web_scraper,Public,,Python
+Repository Name,Visibility,Description,Programming Language,Stars
+seas,Public,,Java,12
+sparql-generate,Public,SPARQL-Generate implementation over Apache Jena,HTML,68
+databat-kgc-revit,Public,Used to generate a knowldege graph from the Revit 3D model of the Espace Fauriel building of MINES Saint-Étienne,Python,2
+databat-kgc-knxproj,Public,Knowledge Graph construction from a ETS5 project file ( `.knxproj` ),Python,1
+maximelefrancois86.github.io,Public,,HTML,0
+aec3po,Public,AEC3PO: Architecture, Engineering, Construction Compliance Checking and Permitting Ontology,HTML,2

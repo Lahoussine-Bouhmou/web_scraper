@@ -14,8 +14,8 @@ def fetch_html(url):
 
 def parse_repositories(html):
     """
-    Parses the HTML content to extract repository names, visibility, description, and programming languages
-    from the GitHub user profile page.
+    Parses the HTML content to extract repository names, visibility, description, programming languages,
+    and the number of stars from the GitHub user profile page.
     """
     soup = BeautifulSoup(html, 'html.parser')
     repos = soup.find_all('li', class_='mb-3')  # Find all pinned repo blocks
@@ -39,21 +39,25 @@ def parse_repositories(html):
         language_tag = repo.find('span', itemprop='programmingLanguage')
         language = language_tag.get_text(strip=True) if language_tag else 'Not specified'
 
+        # Extracting number of stars
+        stars_tag = repo.find('a', class_='pinned-item-meta Link--muted')
+        stars = stars_tag.get_text(strip=True) if stars_tag else '0'  # Default to 0 if no stars tag found
+
         # Append repository details to the list
-        repo_data.append((name, visibility, description, language))
+        repo_data.append((name, visibility, description, language, stars))
 
     return repo_data
 
 def save_to_csv(data, filename="repositories.csv"):
     """
-    Saves the list of repository names, visibility, description, and programming languages to a CSV file.
+    Saves the list of repository names, visibility, description, programming languages,
+    and number of stars to a CSV file.
     """
     if data:
         with open(filename, mode='w', newline='', encoding='utf-8') as file:
-            file.write("Repository Name,Visibility,Description,Programming Language\n")  # Write header
+            file.write("Repository Name,Visibility,Description,Programming Language,Stars\n")  # Write header
             for repo in data:
-                file.write(f"{repo[0]},{repo[1]},{repo[2]},{repo[3]}\n")  # Write name, visibility, description, language
+                file.write(f"{repo[0]},{repo[1]},{repo[2]},{repo[3]},{repo[4]}\n")  # Write name, visibility, description, language, stars
         print(f"Data saved to {filename}")
     else:
         print("No data to save.")
-
