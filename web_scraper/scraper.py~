@@ -15,29 +15,40 @@ def fetch_html(url):
 
 def parse_repositories(html):
     """
-    Parses the HTML content to extract repository names from the GitHub user profile page.
+    Parses the HTML content to extract repository names and visibility 
+    (Public or Private) from the GitHub user profile page.
     """
     soup = BeautifulSoup(html, 'html.parser')
-    repos = soup.find_all('div', class_='d-flex flex-column flex-md-row mb-4')
-
-    repo_names = []
-    for repo in repos:
-        # Extract the name of the repository from the anchor tag
-        name = repo.find('a', itemprop='name codeRepository')
-        if name:
-            repo_names.append(name.text.strip())  # Append the repo name to the list
     
-    return repo_names
+    # Find all the <div> elements that represent individual repositories
+    repo_elements = soup.find_all('div', class_='d-flex flex-column flex-md-row mb-4')
+
+    repo_data = []
+    
+    for repo in repo_elements:
+        # Extract the name of the repository from <span class="repo">
+        name = repo.find('span', class_='repo')
+        
+        # Extract the visibility (Public or Private)
+        visibility = 'Public'  # Default is public
+        private_tag = repo.find('span', class_='Label Label--secondary')
+        if private_tag and 'private' in private_tag.text.lower():
+            visibility = 'Private'
+        
+        if name:
+            repo_data.append((name.text.strip(), visibility))  # Append both name and visibility
+    
+    return repo_data
 
 def save_to_csv(data, filename="repositories.csv"):
     """
-    Saves the list of repository names to a CSV file.
+    Saves the list of repository names and visibility to a CSV file.
     """
     if data:
         with open(filename, mode='w', newline='', encoding='utf-8') as file:
-            file.write("Repository Name\n")  # Write header
+            file.write("Repository Name,Visibility\n")  # Write header
             for repo in data:
-                file.write(f"{repo}\n")  # Write each repository name on a new line
+                file.write(f"{repo[0]},{repo[1]}\n")  # Write name and visibility on a new line
         print(f"Data saved to {filename}")
     else:
         print("No data to save.")

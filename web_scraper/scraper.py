@@ -15,29 +15,41 @@ def fetch_html(url):
 
 def parse_repositories(html):
     """
-    Parses the HTML content to extract repository names from the GitHub user profile page.
-    Now looking for <span class="repo">...</span> to get repository names.
+    Parses the HTML content to extract repository names and visibility 
+    (Public or Private) from the GitHub user profile page.
     """
     soup = BeautifulSoup(html, 'html.parser')
     
     # Find all the <span> elements with class 'repo' that contain repository names
     repos = soup.find_all('span', class_='repo')
 
-    repo_names = []
+    repo_data = []
     for repo in repos:
-        repo_names.append(repo.text.strip())  # Append the repo name to the list
+        # Extract repository name
+        name = repo.text.strip()
+
+        # Default visibility is 'Public'
+        visibility = 'Public'
+        
+        # Find the visibility (Public or Private) - look for the label for 'Private'
+        visibility_tag = repo.find_parent('a').find_next('span', class_='Label--secondary')
+        if visibility_tag and 'private' in visibility_tag.text.lower():
+            visibility = 'Private'
+        
+        # Append both the repo name and visibility to the list
+        repo_data.append((name, visibility))
     
-    return repo_names
+    return repo_data
 
 def save_to_csv(data, filename="repositories.csv"):
     """
-    Saves the list of repository names to a CSV file.
+    Saves the list of repository names and visibility to a CSV file.
     """
     if data:
         with open(filename, mode='w', newline='', encoding='utf-8') as file:
-            file.write("Repository Name\n")  # Write header
+            file.write("Repository Name,Visibility\n")  # Write header
             for repo in data:
-                file.write(f"{repo}\n")  # Write each repository name on a new line
+                file.write(f"{repo[0]},{repo[1]}\n")  # Write name and visibility on a new line
         print(f"Data saved to {filename}")
     else:
         print("No data to save.")
