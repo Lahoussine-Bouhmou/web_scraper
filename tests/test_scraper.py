@@ -27,3 +27,20 @@ def test_fetch_html_success(monkeypatch):
     assert "<html><body>Mocked HTML</body></html>" in result
 
 
+def test_fetch_html_failure(monkeypatch):
+    """Test that fetch_html handles failed requests."""
+    class MockResponse:
+        def __init__(self, status_code, text):
+            self.status_code = status_code
+            self.text = text
+
+    # Mocking the requests.get method
+    def mock_get(url, headers):
+        return MockResponse(404, "Not Found")
+
+    monkeypatch.setattr('requests.get', mock_get)
+
+    url = "https://github.com/someuser/somerepo"
+    result = fetch_html(url)
+    assert result is None  # In case of failure, it should return None
+
