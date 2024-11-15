@@ -1,0 +1,44 @@
+import requests
+from bs4 import BeautifulSoup
+import csv
+
+def fetch_html(url):
+    """
+    Fetches the HTML content from the provided URL.
+    """
+    response = requests.get(url)
+    # Check if the request was successful (status code 200)
+    if response.status_code != 200:
+        print(f"Failed to retrieve data from {url}")
+        return None
+    return response.content
+
+def parse_repositories(html):
+    """
+    Parses the HTML content to extract repository names from the GitHub user profile page.
+    """
+    soup = BeautifulSoup(html, 'html.parser')
+    repos = soup.find_all('div', class_='d-flex flex-column flex-md-row mb-4')
+
+    repo_names = []
+    for repo in repos:
+        # Extract the name of the repository from the anchor tag
+        name = repo.find('a', itemprop='name codeRepository')
+        if name:
+            repo_names.append(name.text.strip())  # Append the repo name to the list
+    
+    return repo_names
+
+def save_to_csv(data, filename="repositories.csv"):
+    """
+    Saves the list of repository names to a CSV file.
+    """
+    if data:
+        with open(filename, mode='w', newline='', encoding='utf-8') as file:
+            file.write("Repository Name\n")  # Write header
+            for repo in data:
+                file.write(f"{repo}\n")  # Write each repository name on a new line
+        print(f"Data saved to {filename}")
+    else:
+        print("No data to save.")
+
