@@ -1,6 +1,7 @@
 # tests/test_scraper.py
 
 import pytest
+from unittest.mock import mock_open, patch
 from web_scraper.scraper import fetch_html, parse_repositories, save_to_csv
 
 # Mocking the 'requests.get' method to simulate fetching HTML
@@ -109,3 +110,28 @@ def test_parse_repositories():
     assert repo_data[2]['Stars'] == 15
     assert repo_data[2]['Forks'] == 7
 
+
+
+def test_save_to_csv():
+    """Test that save_to_csv correctly saves data to a CSV file."""
+
+    # Sample repository data
+    data = [
+        {"Repository Name": "seas", "Visibility": "Public", "Description": "Project about seas", "Programming Language": "Java", "Stars": 12, "Forks": 13},
+        {"Repository Name": "ocean", "Visibility": "Private", "Description": "Ocean exploration project", "Programming Language": "Python", "Stars": 25, "Forks": 10}
+    ]
+
+    # Mock the open() function to avoid actually writing to a file
+    mock_file = mock_open()
+
+    # Use patch to replace the 'open' function with our mock
+    with patch('builtins.open', mock_file):
+        save_to_csv(data, "test_repos.csv")
+
+    # Check that open() was called correctly
+    mock_file.assert_called_once_with("test_repos.csv", mode='w', newline='', encoding='utf-8')
+
+    # Check that the correct header and data were written
+    mock_file().write.assert_any_call("Repository Name,Visibility,Description,Programming Language,Stars,Forks\r\n")
+    mock_file().write.assert_any_call("seas,Public,Project about seas,Java,12,13\r\n")
+    mock_file().write.assert_any_call("ocean,Private,Ocean exploration project,Python,25,10\r\n")
