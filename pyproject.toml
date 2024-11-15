@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "web-scraper"
 version = "0.1.0"
-description = ""
+description = "A Python scraper that extracts repository details from a GitHub user profile"
 authors = ["Lahoussine Bouhmou <lahessine.bouhmou@gmail.com>"]
 readme = "README.md"
 

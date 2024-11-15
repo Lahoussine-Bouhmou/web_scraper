@@ -1,8 +1,10 @@
 from .scraper import fetch_html, parse_repositories, save_to_csv
 
 def main():
-    username = "maximelefrancois86"  # Replace with the GitHub username you want to scrape
-    username1 = "Lahoussine-Bouhmou"
+    # Ask the user to input the GitHub username
+    username = input("Enter the GitHub username to scrape repositories: ")
+    
+    # Construct the GitHub URL for the user's repositories
     url = f"https://github.com/{username}"
     
     # Fetch HTML content from the GitHub user's repositories page
