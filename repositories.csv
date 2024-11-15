@@ -1,7 +1,0 @@
-Repository Name,Visibility,Description,Programming Language,Stars,Forks
-seas,Public,,Java,12,13
-sparql-generate,Public,SPARQL-Generate implementation over Apache Jena,HTML,68,19
-databat-kgc-revit,Public,Used to generate a knowldege graph from the Revit 3D model of the Espace Fauriel building of MINES Saint-Étienne,Python,2,1
-databat-kgc-knxproj,Public,Knowledge Graph construction from a ETS5 project file ( `.knxproj` ),Python,1,0
-maximelefrancois86.github.io,Public,,HTML,0,0
-aec3po,Public,"AEC3PO: Architecture, Engineering, Construction Compliance Checking and Permitting Ontology",HTML,2,1
