@@ -44,3 +44,29 @@ def test_fetch_html_failure(monkeypatch):
     result = fetch_html(url)
     assert result is None  # In case of failure, it should return None
 
+
+def test_parse_repositories():
+    """Test that parse_repositories correctly extracts data from HTML."""
+    html = """
+    <html>
+        <body>
+            <li class="mb-3">
+                <span class="repo">seas</span>
+                <span class="Label Label--secondary">Public</span>
+                <p class="pinned-item-desc">Project about seas</p>
+                <span itemprop="programmingLanguage">Java</span>
+                <a href="/thesmartenergy/seas/stargazers" class="pinned-item-meta Link--muted"> 12 </a>
+                <a href="/thesmartenergy/seas/forks" class="pinned-item-meta Link--muted"> 13 </a>
+            </li>
+        </body>
+    </html>
+    """
+    repo_data = parse_repositories(html)
+    assert len(repo_data) == 1  # We expect one repository to be parsed
+    assert repo_data[0]['Repository Name'] == 'seas'
+    assert repo_data[0]['Visibility'] == 'Public'
+    assert repo_data[0]['Description'] == 'Project about seas'
+    assert repo_data[0]['Programming Language'] == 'Java'
+    assert repo_data[0]['Stars'] == 12
+    assert repo_data[0]['Forks'] == 13
+
