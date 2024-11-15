@@ -1,6 +1,7 @@
-Repository Name,Visibility,Programming Language
-TB-project,Public,Not specified
-JavaSpringFirstProject,Public,Java
-Lahoussine-Bouhmou,Public,Not specified
-lahoussine-bouhmou.github.io,Public,HTML
-Github-Scraper,Public,Not specified
+Repository Name,Visibility,Description,Programming Language
+TB-project,Public,first github repository,Not specified
+JavaSpringFirstProject,Public,,Java
+Lahoussine-Bouhmou,Public,,Not specified
+lahoussine-bouhmou.github.io,Public,,HTML
+Github-Scraper,Public,,Not specified
+web_scraper,Public,,Python

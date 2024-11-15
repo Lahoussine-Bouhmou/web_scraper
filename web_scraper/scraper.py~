@@ -7,7 +7,6 @@ def fetch_html(url):
     Fetches the HTML content from the provided URL.
     """
     response = requests.get(url)
-    # Check if the request was successful (status code 200)
     if response.status_code != 200:
         print(f"Failed to retrieve data from {url}")
         return None
@@ -19,30 +18,24 @@ def parse_repositories(html):
     from the GitHub user profile page.
     """
     soup = BeautifulSoup(html, 'html.parser')
-    
-    # Find all the <span> elements with class 'repo' that contain repository names
-    repos = soup.find_all('span', class_='repo')
+    repos = soup.find_all('li', class_='mb-3')  # Find all pinned repo blocks
 
     repo_data = []
     
     for repo in repos:
         # Extract repository name
-        name = repo.text.strip()
-        
-        # Default visibility is 'Public'
-        visibility = 'Public'
-        
-        # Find the visibility (Public or Private) - look for the label for 'Private'
-        visibility_tag = repo.find_parent('a').find_next('span', class_='Label--secondary')
-        if visibility_tag and 'private' in visibility_tag.text.lower():
-            visibility = 'Private'
-        
-        # Find the programming language using the new HTML element with itemprop="programmingLanguage"
+        name_tag = repo.find('span', class_='repo')
+        name = name_tag.text.strip() if name_tag else 'Unknown'
+
+        # Extract visibility (Public or Private)
+        visibility_tag = repo.find('span', class_='Label--secondary')
+        visibility = visibility_tag.text.strip() if visibility_tag else 'Unknown'
+
+        # Extract programming language
         language_tag = repo.find('span', itemprop='programmingLanguage')
-        if language_tag:
-            language = language_tag_text(strip=True)
+        language = language_tag.text.strip() if language_tag else 'Not specified'
         
-        # Append the repository name, visibility, and language to the list
+        # Append repository details to the list
         repo_data.append((name, visibility, language))
     
     return repo_data

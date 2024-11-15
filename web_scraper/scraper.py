@@ -14,14 +14,14 @@ def fetch_html(url):
 
 def parse_repositories(html):
     """
-    Parses the HTML content to extract repository names, visibility, and programming languages
+    Parses the HTML content to extract repository names, visibility, description, and programming languages
     from the GitHub user profile page.
     """
     soup = BeautifulSoup(html, 'html.parser')
     repos = soup.find_all('li', class_='mb-3')  # Find all pinned repo blocks
 
     repo_data = []
-    
+
     for repo in repos:
         # Extract repository name
         name_tag = repo.find('span', class_='repo')
@@ -30,25 +30,29 @@ def parse_repositories(html):
         # Extract visibility (Public or Private)
         visibility_tag = repo.find('span', class_='Label--secondary')
         visibility = visibility_tag.text.strip() if visibility_tag else 'Unknown'
-        
+
+        # Extracting description
+        description_tag = repo.find('p', class_='pinned-item-desc')
+        description = description_tag.get_text(strip=True) if description_tag else 'No description'
+
         # Extract programming language
         language_tag = repo.find('span', itemprop='programmingLanguage')
-        language = language_tag.text.strip() if language_tag else 'Not specified'
+        language = language_tag.get_text(strip=True) if language_tag else 'Not specified'
 
         # Append repository details to the list
-        repo_data.append((name, visibility, language))
-    
+        repo_data.append((name, visibility, description, language))
+
     return repo_data
 
 def save_to_csv(data, filename="repositories.csv"):
     """
-    Saves the list of repository names, visibility, and programming languages to a CSV file.
+    Saves the list of repository names, visibility, description, and programming languages to a CSV file.
     """
     if data:
         with open(filename, mode='w', newline='', encoding='utf-8') as file:
-            file.write("Repository Name,Visibility,Programming Language\n")  # Write header
+            file.write("Repository Name,Visibility,Description,Programming Language\n")  # Write header
             for repo in data:
-                file.write(f"{repo[0]},{repo[1]},{repo[2]}\n")  # Write name, visibility, and language
+                file.write(f"{repo[0]},{repo[1]},{repo[2]},{repo[3]}\n")  # Write name, visibility, description, language
         print(f"Data saved to {filename}")
     else:
         print("No data to save.")
