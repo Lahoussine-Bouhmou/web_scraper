@@ -24,10 +24,11 @@ def parse_repositories(html):
     repos = soup.find_all('span', class_='repo')
 
     repo_data = []
+    
     for repo in repos:
         # Extract repository name
         name = repo.text.strip()
-
+        
         # Default visibility is 'Public'
         visibility = 'Public'
         
@@ -36,9 +37,10 @@ def parse_repositories(html):
         if visibility_tag and 'private' in visibility_tag.text.lower():
             visibility = 'Private'
         
-        # Find the programming language
-        language_tag = repo.find_parent('a').find_next('span', class_='repo-language-color')
-        language = language_tag.text.strip() if language_tag else 'Unknown'  # Default to 'Unknown' if no language is found
+        # Find the programming language using the new HTML element with itemprop="programmingLanguage"
+        language_tag = repo.find('span', itemprop='programmingLanguage')
+        if language_tag:
+            language = language_tag_text(strip=True)
         
         # Append the repository name, visibility, and language to the list
         repo_data.append((name, visibility, language))
