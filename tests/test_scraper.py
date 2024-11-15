@@ -45,28 +45,67 @@ def test_fetch_html_failure(monkeypatch):
     assert result is None  # In case of failure, it should return None
 
 
+
 def test_parse_repositories():
-    """Test that parse_repositories correctly extracts data from HTML."""
+    """Test that parse_repositories correctly handles a large HTML with multiple repositories."""
     html = """
     <html>
         <body>
             <li class="mb-3">
-                <span class="repo">seas</span>
+                <span class="repo">Repo1</span>
                 <span class="Label Label--secondary">Public</span>
-                <p class="pinned-item-desc">Project about seas</p>
-                <span itemprop="programmingLanguage">Java</span>
-                <a href="/thesmartenergy/seas/stargazers" class="pinned-item-meta Link--muted"> 12 </a>
-                <a href="/thesmartenergy/seas/forks" class="pinned-item-meta Link--muted"> 13 </a>
+                <p class="pinned-item-desc">Description of Repo1</p>
+                <span itemprop="programmingLanguage">Python</span>
+                <a href="/user/repo1/stargazers" class="pinned-item-meta Link--muted"> 10 </a>
+                <a href="/user/repo1/forks" class="pinned-item-meta Link--muted"> 5 </a>
+            </li>
+            <li class="mb-3">
+                <span class="repo">Repo2</span>
+                <span class="Label Label--secondary">Private</span>
+                <p class="pinned-item-desc">Description of Repo2</p>
+                <span itemprop="programmingLanguage">JavaScript</span>
+                <a href="/user/repo2/stargazers" class="pinned-item-meta Link--muted"> 20 </a>
+                <a href="/user/repo2/forks" class="pinned-item-meta Link--muted"> 10 </a>
+            </li>
+            <li class="mb-3">
+                <span class="repo">Repo3</span>
+                <span class="Label Label--secondary">Public</span>
+                <p class="pinned-item-desc">Description of Repo3</p>
+                <span itemprop="programmingLanguage">Ruby</span>
+                <a href="/user/repo3/stargazers" class="pinned-item-meta Link--muted"> 15 </a>
+                <a href="/user/repo3/forks" class="pinned-item-meta Link--muted"> 7 </a>
             </li>
         </body>
     </html>
     """
+
+    # Parse the repositories from the HTML
     repo_data = parse_repositories(html)
-    assert len(repo_data) == 1  # We expect one repository to be parsed
-    assert repo_data[0]['Repository Name'] == 'seas'
+
+    # Assertions
+    assert len(repo_data) == 3  # We expect three repositories to be parsed
+
+    # Test for the first repository
+    assert repo_data[0]['Repository Name'] == 'Repo1'
     assert repo_data[0]['Visibility'] == 'Public'
-    assert repo_data[0]['Description'] == 'Project about seas'
-    assert repo_data[0]['Programming Language'] == 'Java'
-    assert repo_data[0]['Stars'] == 12
-    assert repo_data[0]['Forks'] == 13
+    assert repo_data[0]['Description'] == 'Description of Repo1'
+    assert repo_data[0]['Programming Language'] == 'Python'
+    assert repo_data[0]['Stars'] == 10
+    assert repo_data[0]['Forks'] == 5
+
+    # Test for the second repository
+    assert repo_data[1]['Repository Name'] == 'Repo2'
+    assert repo_data[1]['Visibility'] == 'Private'
+    assert repo_data[1]['Description'] == 'Description of Repo2'
+    assert repo_data[1]['Programming Language'] == 'JavaScript'
+    assert repo_data[1]['Stars'] == 20
+    assert repo_data[1]['Forks'] == 10
+
+    # Test for the third repository
+    assert repo_data[2]['Repository Name'] == 'Repo3'
+    assert repo_data[2]['Visibility'] == 'Public'
+    assert repo_data[2]['Description'] == 'Description of Repo3'
+    assert repo_data[2]['Programming Language'] == 'Ruby'
+    assert repo_data[2]['Stars'] == 15
+    assert repo_data[2]['Forks'] == 7
 
