@@ -1,26 +1,24 @@
-from .scraper import fetch_html, parse_repositories, save_to_csv
+# web_scraper/__main__.py
+
+from web_scraper.scraper import fetch_html, parse_repositories, save_to_csv
+
+def scrape(url):
+    """Main scraping function to fetch HTML, parse it, and save to CSV."""
+    html = fetch_html(url)
+    if html:
+        repository_data = parse_repositories(html)
+        save_to_csv(repository_data)
 
 def main():
-    # Ask the user to input the GitHub username
-    username = input("Enter the GitHub username to scrape repositories: ")
+    """CLI entry point to scrape repositories from a given URL."""
+    # Prompt the user for the GitHub username
+    username = input("Enter the GitHub username to scrape: ").strip()
     
-    # Construct the GitHub URL for the user's repositories
-    url = f"https://github.com/{username}"
-    
-    # Fetch HTML content from the GitHub user's repositories page
-    html = fetch_html(url)
-    
-    if html:
-        # Parse the repositories from the HTML content
-        repos = parse_repositories(html)
-        
-        if repos:
-            # Save the repository names to a CSV file
-            save_to_csv(repos)
-        else:
-            print(f"No repositories found for {username}")
+    if username:  # Proceed only if a username is entered
+        url = f"https://github.com/{username}"
+        scrape(url)
     else:
-        print("Failed to fetch the HTML content.")
+        print("No username entered. Exiting.")
 
 if __name__ == "__main__":
     main()

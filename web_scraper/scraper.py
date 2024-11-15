@@ -4,65 +4,67 @@ import re
 import csv
 
 def fetch_html(url):
-    """
-    Fetches the HTML content from the provided URL.
-    """
-    response = requests.get(url)
-    if response.status_code != 200:
-        print(f"Failed to retrieve data from {url}")
+    """Fetch HTML content from the given URL."""
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    }
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        return response.text
+    else:
+        print(f"Failed to retrieve data from {url}. Status code: {response.status_code}")
         return None
-    return response.content
 
 def parse_repositories(html):
-    """
-    Parses the HTML content to extract repository names, visibility, description, programming languages,
-    and the number of stars from the GitHub user profile page.
-    """
+    """Parse HTML content and extract repository information."""
     soup = BeautifulSoup(html, 'html.parser')
-    repos = soup.find_all('li', class_='mb-3')  # Find all pinned repo blocks
-
-    repo_data = []
+    repos = soup.find_all('li', class_='mb-3')  # Change class if needed
+    repository_data = []
 
     for repo in repos:
-        # Extract repository name
-        name_tag = repo.find('span', class_='repo')
-        name = name_tag.text.strip() if name_tag else 'Unknown'
+        # Repository Name
+        repo_name = repo.find('span', class_='repo').get_text(strip=True) if repo.find('span', class_='repo') else 'Unknown'
 
-        # Extract visibility (Public or Private)
-        visibility_tag = repo.find('span', class_='Label--secondary')
-        visibility = visibility_tag.text.strip() if visibility_tag else 'Unknown'
+        # Visibility
+        visibility_tag = repo.find('span', class_=re.compile(r'^Label Label--secondary'))
+        visibility = visibility_tag.get_text(strip=True) if visibility_tag else 'Unknown'
 
-        # Extracting description
+        # Description
         description_tag = repo.find('p', class_='pinned-item-desc')
         description = description_tag.get_text(strip=True) if description_tag else 'No description'
 
-        # Extract programming language
+        # Programming Language
         language_tag = repo.find('span', itemprop='programmingLanguage')
         language = language_tag.get_text(strip=True) if language_tag else 'Not specified'
 
-        # Stars - using regex to find href ending with /stargazers
+        # Stars
         stars_tag = repo.find('a', href=re.compile(r'.*/stargazers$'))
-        stars = int(stars_tag.get_text(strip=True)) if stars_tag else 0  # Default to 0 if no stars found
+        stars = int(stars_tag.get_text(strip=True)) if stars_tag else 0
 
-        # Forks - using regex to find href ending with /forks
+        # Forks
         forks_tag = repo.find('a', href=re.compile(r'.*/forks$'))
-        forks = int(forks_tag.get_text(strip=True)) if forks_tag else 0  # Default to 0 if no forks found
+        forks = int(forks_tag.get_text(strip=True)) if forks_tag else 0
 
-        # Append repository details to the list
-        repo_data.append((name, visibility, description, language, stars, forks))
+        # Append all extracted data to repository_data list
+        repository_data.append({
+            "Repository Name": repo_name,
+            "Visibility": visibility,
+            "Description": description,
+            "Programming Language": language,
+            "Stars": stars,
+            "Forks": forks
+        })
 
-    return repo_data
+    return repository_data
 
 def save_to_csv(data, filename="repositories.csv"):
-    """
-    Saves the list of repository names, visibility, description, programming languages,
-    and number of stars and forks to a CSV file.
-    """
+    """Save the parsed repository data to a CSV file."""
     if data:
         with open(filename, mode='w', newline='', encoding='utf-8') as file:
-            file.write("Repository Name,Visibility,Description,Programming Language,Stars,Forks\n")  # Write header
-            for repo in data:
-                file.write(f"{repo[0]},{repo[1]},{repo[2]},{repo[3]},{repo[4]},{repo[5]}\n")  # Write name, visibility, description, language, stars, forks
-        print(f"Data saved to {filename}")
+            writer = csv.DictWriter(file, fieldnames=data[0].keys())
+            writer.writeheader()
+            writer.writerows(data)
+        print(f"Data saved to {filename}.")
     else:
         print("No data to save.")
+
