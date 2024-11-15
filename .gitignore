@@ -1,0 +1,13 @@
+# Byte-compiled files
+__pycache__/
+*.pyc
+
+# Test cache
+.pytest_cache/
+
+# Distribution/build artifacts
+dist/
+
+# Editor backups
+*~
+*.swp
