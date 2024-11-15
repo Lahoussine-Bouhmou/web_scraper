@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+import re
 import csv
 
 def fetch_html(url):
@@ -39,13 +40,13 @@ def parse_repositories(html):
         language_tag = repo.find('span', itemprop='programmingLanguage')
         language = language_tag.get_text(strip=True) if language_tag else 'Not specified'
 
-        # Extracting number of stars
-        stars_tag = repo.find('a', class_='pinned-item-meta Link--muted', attrs={'aria-label': 'stars'})
-        stars = stars_tag.get_text(strip=True) if stars_tag else '0'  # Default to 0 if no stars tag found
+        # Stars - using regex to find href ending with /stargazers
+        stars_tag = repo.find('a', href=re.compile(r'.*/stargazers$'))
+        stars = int(stars_tag.get_text(strip=True)) if stars_tag else 0  # Default to 0 if no stars found
 
-        # Extracting number of forks
-        forks_tag = repo.find('a', class_='pinned-item-meta Link--muted', attrs={'aria-label': 'forks'})
-        forks = forks_tag.get_text(strip=True) if forks_tag else '0'  # Default to 0 if no forks tag found
+        # Forks - using regex to find href ending with /forks
+        forks_tag = repo.find('a', href=re.compile(r'.*/forks$'))
+        forks = int(forks_tag.get_text(strip=True)) if forks_tag else 0  # Default to 0 if no forks found
 
         # Append repository details to the list
         repo_data.append((name, visibility, description, language, stars, forks))
