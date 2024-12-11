@@ -13,8 +13,19 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-def fetch_html(url):
-    """Fetch HTML content from the given URL."""
+def fetch_html(url: str) -> str:
+    """
+    Fetch HTML content from the given URL.
+
+    Args:
+        url (str): The URL of the webpage to fetch the HTML content from.
+
+    Returns:
+        str: The HTML content of the webpage, or None if the request fails.
+
+    Logs:
+        Logs relevant messages at each stage of fetching the HTML, including success and failure.
+    """
     logger.debug(f"Attempting to fetch HTML content from URL: {url}")
     
     headers = {
@@ -38,8 +49,19 @@ def fetch_html(url):
     logger.warning(f"Failed to retrieve data from {url}. Returning None.")
     return None
 
-def parse_repositories(html):
-    """Parse HTML content and extract repository information."""
+def parse_repositories(html: str) -> list:
+    """
+    Parse HTML content and extract repository information.
+
+    Args:
+        html (str): The HTML content to parse for repository data.
+
+    Returns:
+        list: A list of dictionaries containing parsed repository data.
+        
+    Logs:
+        Logs the process of parsing the HTML and any issues encountered (e.g., missing data).
+    """
     logger.debug("Parsing HTML content to extract repository data.")
 
     soup = BeautifulSoup(html, 'html.parser')
@@ -89,8 +111,17 @@ def parse_repositories(html):
     logger.info(f"Parsed {len(repository_data)} repositories from HTML.")
     return repository_data
 
-def save_to_csv(data, filename="repositories.csv"):
-    """Save the parsed repository data to a CSV file."""
+def save_to_csv(data: list, filename: str = "repositories.csv"):
+    """
+    Save the parsed repository data to a CSV file.
+
+    Args:
+        data (list): A list of dictionaries containing repository data to be saved.
+        filename (str): The name of the file to save the data to (default: 'repositories.csv').
+
+    Logs:
+        Logs information about the success or failure of saving the data to a CSV file.
+    """
     if data:
         try:
             with open(filename, mode='w', newline='', encoding='utf-8') as file:

@@ -3,6 +3,8 @@
 # Define variables for common paths
 VENV_DIR = .venv
 PYTHON = poetry run python
+SPHINX_BUILD = poetry run sphinx-build
+BUILD_DIR = _build/html
 
 # Default target
 .PHONY: help
@@ -15,6 +17,7 @@ help:
 	@echo "  make publish     - Publish the package"
 	@echo "  make clean       - Clean up the environment and temporary files"
 	@echo "  make dev         - Install development dependencies"
+	@echo "  make html        - Generate HTML documentation using Sphinx"
 
 # Install dependencies using Poetry
 .PHONY: install
@@ -49,4 +52,10 @@ publish:
 # Clean up the virtual environment and other temporary files
 .PHONY: clean
 clean:
-	rm -rf $(VENV_DIR) .pytest_cache
+	rm -rf $(VENV_DIR) .pytest_cache $(BUILD_DIR)
+
+# Generate HTML documentation using Sphinx
+.PHONY: html
+html:
+	$(SPHINX_BUILD) -b html . $(BUILD_DIR)
+	@echo "Documentation generated in $(BUILD_DIR)"
