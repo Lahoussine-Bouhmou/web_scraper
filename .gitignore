@@ -8,9 +8,6 @@ __pycache__/
 # Test cache
 .pytest_cache/
 
-# Distribution/build artifacts
-dist/
-
 # Editor backups
 *~
 *.swp
