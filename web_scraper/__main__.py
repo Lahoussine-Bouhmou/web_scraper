@@ -13,7 +13,7 @@ def main():
     """CLI entry point to scrape repositories from a given URL."""
     # Prompt the user for the GitHub username
     username = input("Enter the GitHub username to scrape: ").strip()
-    
+
     if username:  # Proceed only if a username is entered
         url = f"https://github.com/{username}"
         scrape(url)
@@ -22,4 +22,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

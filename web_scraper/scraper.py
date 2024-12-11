@@ -1,29 +1,35 @@
-import requests
-from bs4 import BeautifulSoup
 import re
 import csv
+import requests
+from bs4 import BeautifulSoup
 
 def fetch_html(url):
     """Fetch HTML content from the given URL."""
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        'User-Agent': (
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+            '(KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        )
     }
-    response = requests.get(url, headers=headers)
+    response = requests.get(url, headers=headers, timeout=10)
+
     if response.status_code == 200:
         return response.text
-    else:
-        print(f"Failed to retrieve data from {url}. Status code: {response.status_code}")
-        return None
+
+    # else: Failed to retrieve data
+    print(f"Failed to retrieve data from {url}. Status code: {response.status_code}")
+    return None
 
 def parse_repositories(html):
     """Parse HTML content and extract repository information."""
     soup = BeautifulSoup(html, 'html.parser')
-    repos = soup.find_all('li', class_='mb-3')  # Change class if needed
+    repos = soup.find_all('li', class_='mb-3')
     repository_data = []
 
     for repo in repos:
         # Repository Name
-        repo_name = repo.find('span', class_='repo').get_text(strip=True) if repo.find('span', class_='repo') else 'Unknown'
+        repo_span = repo.find('span', class_='repo')
+        repo_name = repo_span.get_text(strip=True) if repo_span else 'Unknown'
 
         # Visibility
         visibility_tag = repo.find('span', class_=re.compile(r'^Label Label--secondary'))
@@ -67,4 +73,3 @@ def save_to_csv(data, filename="repositories.csv"):
         print(f"Data saved to {filename}.")
     else:
         print("No data to save.")
-
