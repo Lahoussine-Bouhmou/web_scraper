@@ -1,25 +1,31 @@
-# tests/test_scraper.py
-
+import requests
 import pytest
 from unittest.mock import mock_open, patch
 from web_scraper.scraper import fetch_html, parse_repositories, save_to_csv
 
-# Mocking the 'requests.get' method to simulate fetching HTML
-def test_fetch_html_success(monkeypatch):
-    """Test that fetch_html correctly fetches HTML content."""
 
-    class MockResponse:
-        def __init__(self, status_code, text):
-            self.status_code = status_code
-            self.text = text
+# Mock response for successful fetch_html test
+class MockResponse:
+    def __init__(self, status_code, text):
+        self.status_code = status_code
+        self.text = text
 
-    # Mocking the get function
-    def mock_get(url, headers=None):  # Add headers argument to the mock_get function
+    def raise_for_status(self):
+        if self.status_code != 200:
+            raise requests.exceptions.HTTPError(f"HTTP Error {self.status_code}: {self.text}")
+
+
+@pytest.fixture
+def mock_requests_get(monkeypatch):
+    """Fixture to mock requests.get."""
+    def mock_get(url, headers=None, timeout=None):
         return MockResponse(200, "<html><body>Mocked HTML</body></html>")
 
-    # Monkeypatch requests.get to use the mock_get
     monkeypatch.setattr('requests.get', mock_get)
 
+
+def test_fetch_html_success(mock_requests_get):
+    """Test that fetch_html correctly fetches HTML content."""
     url = "https://github.com/someuser/somerepo"
     result = fetch_html(url)
 
@@ -30,21 +36,17 @@ def test_fetch_html_success(monkeypatch):
 
 def test_fetch_html_failure(monkeypatch):
     """Test that fetch_html handles failed requests."""
-    class MockResponse:
-        def __init__(self, status_code, text):
-            self.status_code = status_code
-            self.text = text
-
-    # Mocking the requests.get method
-    def mock_get(url, headers):
+    # Mocking the requests.get function for failure scenario
+    def mock_get(url, headers=None, timeout=None):
         return MockResponse(404, "Not Found")
 
     monkeypatch.setattr('requests.get', mock_get)
 
     url = "https://github.com/someuser/somerepo"
     result = fetch_html(url)
-    assert result is None  # In case of failure, it should return None
 
+    # Assert that the result is None when the request fails
+    assert result is None
 
 
 def test_parse_repositories():
@@ -111,11 +113,8 @@ def test_parse_repositories():
     assert repo_data[2]['Forks'] == 7
 
 
-
 def test_save_to_csv():
     """Test that save_to_csv correctly saves data to a CSV file."""
-
-    # Sample repository data
     data = [
         {"Repository Name": "seas", "Visibility": "Public", "Description": "Project about seas", "Programming Language": "Java", "Stars": 12, "Forks": 13},
         {"Repository Name": "ocean", "Visibility": "Private", "Description": "Ocean exploration project", "Programming Language": "Python", "Stars": 25, "Forks": 10}
