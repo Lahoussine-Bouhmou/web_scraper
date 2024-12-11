@@ -108,7 +108,7 @@ Enter the GitHub username to scrape: octocat
 After entering the username, the scraper will fetch the repository details from the specified GitHub profile.
 
 ### Step 2: View Extracted Data
-The extracted data is saved as a CSV file in the project directory. The filename will include the username, for example: `octocat_repositories.csv`.
+The extracted data is saved as a CSV file in the project directory. The filename will include the username, for example: `repositories.csv`.
 
 #### Example CSV Format
 Here’s an example of the output CSV format:

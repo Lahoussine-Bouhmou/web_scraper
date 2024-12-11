@@ -26,8 +26,8 @@ def fetch_html(url: str) -> str:
     Logs:
         Logs relevant messages at each stage of fetching the HTML, including success and failure.
     """
-    logger.debug(f"Attempting to fetch HTML content from URL: {url}")
-    
+    logger.debug("Attempting to fetch HTML content from URL: %s", url)
+
     headers = {
         'User-Agent': (
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
@@ -38,15 +38,15 @@ def fetch_html(url: str) -> str:
     try:
         response = requests.get(url, headers=headers, timeout=10)
         response.raise_for_status()  # Raises HTTPError for bad responses
-        logger.info(f"Successfully fetched HTML content from {url}. Status code: {response.status_code}")
+        logger.info("Successfully fetched HTML content from %s. Status code: %d", url, response.status_code)
         return response.text
 
     except requests.exceptions.HTTPError as http_err:
-        logger.error(f"HTTP error occurred while fetching {url}: {http_err}")
+        logger.error("HTTP error occurred while fetching %s: %s", url, http_err)
     except requests.exceptions.RequestException as req_err:
-        logger.error(f"Error occurred while fetching {url}: {req_err}")
-    
-    logger.warning(f"Failed to retrieve data from {url}. Returning None.")
+        logger.error("Error occurred while fetching %s: %s", url, req_err)
+
+    logger.warning("Failed to retrieve data from %s. Returning None.", url)
     return None
 
 def parse_repositories(html: str) -> list:
@@ -108,7 +108,7 @@ def parse_repositories(html: str) -> list:
             "Forks": forks
         })
 
-    logger.info(f"Parsed {len(repository_data)} repositories from HTML.")
+    logger.info("Parsed %d repositories from HTML.", len(repository_data))
     return repository_data
 
 def save_to_csv(data: list, filename: str = "repositories.csv"):
@@ -128,9 +128,10 @@ def save_to_csv(data: list, filename: str = "repositories.csv"):
                 writer = csv.DictWriter(file, fieldnames=data[0].keys())
                 writer.writeheader()
                 writer.writerows(data)
-            logger.info(f"Data saved to {filename}.")
+            logger.info("Data saved to %s.", filename)
             print(f"Data saved to {filename}.")
-        except Exception as e:
-            logger.critical(f"Critical error while saving data to CSV: {str(e)}")
+        except requests.exceptions.RequestException as e:
+            logger.critical("Critical error while saving data to CSV: %s", str(e))
+
     else:
         logger.warning("No data to save.")
