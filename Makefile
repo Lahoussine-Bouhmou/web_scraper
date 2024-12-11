@@ -13,6 +13,8 @@ help:
 	@echo "  make install     - Install dependencies"
 	@echo "  make run         - Run the scraper"
 	@echo "  make test        - Run the tests"
+	@echo "  make lint        - Run static code analysis using pylint"
+	@echo "  make hooks       - Install pre-commit hooks"
 	@echo "  make build       - Build the package"
 	@echo "  make publish     - Publish the package"
 	@echo "  make clean       - Clean up the environment and temporary files"
@@ -38,6 +40,16 @@ run:
 .PHONY: test
 test:
 	poetry run pytest
+
+# Run static code analysis using pylint
+.PHONY: lint
+lint:
+	poetry run pylint web_scraper/
+
+# Install pre-commit hooks
+.PHONY: hooks
+hooks:
+	poetry run pre-commit install
 
 # Build the project package
 .PHONY: build
