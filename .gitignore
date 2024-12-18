@@ -1,6 +1,3 @@
-# Ignore CSV file containing scraped data
-repositories.csv
-
 # Byte-compiled files
 __pycache__/
 *.pyc
