@@ -1,34 +1,35 @@
-name: CI - Build and Test
+# .github/workflows/test.yml
+name: Run Unit Tests
 
 on:
   push:
-    branches:
-      - '**'   # Trigger on any branch
-  pull_request:  # Trigger for pull requests
+    branches: [ master, main, develop ]
+  pull_request:
+    branches: [ master, main, develop ]
 
 jobs:
-  test:
-    runs-on: ubuntu-latest  # Use the latest Ubuntu image
+  build-and-test:
+    runs-on: ubuntu-latest
+
     strategy:
       matrix:
-        python-version: [3.8, 3.9, 3.10]  # Define the Python versions
+        python-version: [3.8, 3.10, 3.11]
+
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3  # Check out the repository code
+      - name: Checkout Repository
+        uses: actions/checkout@v3
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4  # Set up Python for the matrix version
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install Poetry
-        run: |
-          pip install poetry  # Ensure Poetry is installed freshly for each version
-
       - name: Install Dependencies
         run: |
-          poetry install  # Install dependencies using Poetry
+          python -m pip install --upgrade pip
+          pip install poetry
+          poetry install
 
-      - name: Run Unit Tests
+      - name: Run Tests
         run: |
-          poetry run pytest tests/  # Run unit tests in the `tests/` directory
+          make test
