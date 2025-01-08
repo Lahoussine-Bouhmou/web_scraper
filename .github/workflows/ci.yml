@@ -1,0 +1,31 @@
+name: CI - Build and Test
+
+on:
+  push:
+    branches:
+      - '**'   # Trigger on any branch
+  pull_request:  # Trigger for pull requests
+
+jobs:
+  test:
+    runs-on: ubuntu-latest  # Use the latest Ubuntu image
+    strategy:
+      matrix:
+        python-version: [3.8, 3.9, 3.10]  # Define the Python versions
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3  # Check out the repository code
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4  # Set up Python for the matrix version
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Dependencies
+        run: |
+          pip install poetry  # Install Poetry (dependency manager)
+          poetry install  # Install dependencies
+
+      - name: Run Unit Tests
+        run: |
+          poetry run pytest tests/  # Run unit tests in the `tests/` directory
