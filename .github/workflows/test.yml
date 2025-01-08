@@ -1,5 +1,5 @@
 # .github/workflows/test.yml
-name: Run Unit Tests
+name: Build and Run Unit Tests
 
 on:
   push:
@@ -13,7 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: ["3.10", "3.11"]  # Align with pyproject.toml
+        python-version: ["3.10", "3.11"]
 
     steps:
       - name: Checkout Repository
