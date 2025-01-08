@@ -1,5 +1,5 @@
 # .github/workflows/test.yml
-name: Run Unit Tests
+name: Build and Test with Poetry Cache
 
 on:
   push:
@@ -13,16 +13,28 @@ jobs:
 
     strategy:
       matrix:
-        python-version: [3.8, 3.9, 3.11]  # Quoted versions
+        python-version: ["3.8", "3.9", "3.11"]
 
     steps:
-      - name: Checkout Repository
+      - name: Check out code
         uses: actions/checkout@v3
 
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
+
+      # Cache poetry-related directories, using a key that includes both the OS
+      # and the Python version (plus the hash of the lock file for invalidation).
+      - name: Cache Poetry Dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/pypoetry
+            ~/.cache/pip
+          key: ${{ runner.os }}-poetry-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-poetry-${{ matrix.python-version }}-
 
       - name: Install Dependencies
         run: |
