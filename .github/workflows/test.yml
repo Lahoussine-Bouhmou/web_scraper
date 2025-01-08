@@ -1,5 +1,5 @@
 # .github/workflows/test.yml
-name: Build and Test with Poetry Cache
+name: Run Unit Tests
 
 on:
   push:
@@ -13,19 +13,17 @@ jobs:
 
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.11"]
+        python-version: ["3.10", "3.11"]  # Align with pyproject.toml
 
     steps:
-      - name: Check out code
+      - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Set up Python
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "${{ matrix.python-version }}"
 
-      # Cache poetry-related directories, using a key that includes both the OS
-      # and the Python version (plus the hash of the lock file for invalidation).
       - name: Cache Poetry Dependencies
         uses: actions/cache@v3
         with:

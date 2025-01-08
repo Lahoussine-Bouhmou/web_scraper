@@ -6,7 +6,7 @@ authors = ["Lahoussine Bouhmou <lahessine.bouhmou@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = ">=3.10,<4.0"
 requests = "^2.32.3"
 beautifulsoup4 = "^4.12.3"
 sphinx = "^8.1.3"
