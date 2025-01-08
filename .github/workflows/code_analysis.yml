@@ -17,23 +17,40 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: 3.10
+          python-version: "3.10"  # You can specify a single version since it's for analysis
+
+      - name: Cache Poetry Dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/pypoetry
+            ~/.cache/pip
+          key: ${{ runner.os }}-poetry-analysis-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-poetry-analysis-
 
       - name: Install Dependencies
         run: |
-          make install
+          python -m pip install --upgrade pip
+          pip install poetry
+          poetry install --no-dev  # Optionally skip dev dependencies if not needed
 
       - name: Run Pylint
         run: |
           make lint
 
-      - name: Run Bandit (Security Analysis)
+      - name: Run Bandit for Security Analysis
         run: |
           pip install bandit
-          bandit -r web_scraper/
+          bandit -r web_scraper/ -f json -o bandit-report.json
 
-      - name: Check for Secrets in Commits
-        uses: dawidd6/action-automatic-releases@v0.2.0
+      - name: Upload Bandit Report
+        uses: actions/upload-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          args: "git log -1 --pretty=%B | grep -i 'password\|secret\|token'"
+          name: bandit-report
+          path: bandit-report.json
+
+      - name: Scan for Secrets in Commits
+        uses: zricethezav/gitleaks-action@v2.3.0
+        with:
+          args: "--path=./ --verbose"
