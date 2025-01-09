@@ -13,11 +13,13 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Ensures the full history is fetched
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.10"  # Use a consistent Python version
+          python-version: "3.10"
 
       - name: Install Poetry
         run: |
@@ -36,12 +38,11 @@ jobs:
       - name: Generate Changelog
         id: changelog
         run: |
-          git fetch --tags
-          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^)
+          git fetch --tags --unshallow
+          PREV_TAG=$(git describe --tags --abbrev=0 $(git rev-list --tags --skip=1 --max-count=1))
           CHANGELOG=$(git log ${PREV_TAG}..HEAD --pretty=format:"- %s")
-          echo "CHANGELOG<<EOF" >> $GITHUB_ENV
-          echo "${CHANGELOG}" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
+          echo "PREV_TAG=${PREV_TAG}" >> $GITHUB_ENV
+          echo "CHANGELOG=${CHANGELOG}" >> $GITHUB_ENV
 
       - name: Create GitHub Release
         id: create_release
@@ -49,7 +50,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref_name }}  # Use the tag name
+          tag_name: ${{ github.ref_name }}
           release_name: Release ${{ github.ref_name }}
           body: ${{ env.CHANGELOG }}
           draft: false
