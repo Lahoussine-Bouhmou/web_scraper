@@ -12,12 +12,12 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.10"  # You can specify a single version since it's for analysis
+          python-version: "3.10"
 
       - name: Cache Poetry Dependencies
         uses: actions/cache@v3
@@ -45,7 +45,7 @@ jobs:
           bandit -r web_scraper/ -f json -o bandit-report.json
 
       - name: Upload Bandit Report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: bandit-report
           path: bandit-report.json
