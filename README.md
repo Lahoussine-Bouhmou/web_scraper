@@ -1,4 +1,4 @@
-# Web Scraper Project
+# Web Scraper Project - Python
 
 This project is a Python-based web scraper that extracts popular repositories' information from a GitHub user profile. The scraper fetches repository details, including:
 
